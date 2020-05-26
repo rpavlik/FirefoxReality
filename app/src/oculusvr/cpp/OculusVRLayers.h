@@ -57,8 +57,8 @@ public:
 template<class T, class U>
 class OculusLayerBase : public OculusLayer {
 public:
-  OculusSwapChainPtr swapChain;
-  SurfaceChangedTargetPtr surfaceChangedTarget;
+  ovrTextureSwapChain *swapChain = nullptr;
+  std::shared_ptr<SurfaceChangedTarget> surfaceChangedTarget;
   T layer;
   U ovrLayer;
 
