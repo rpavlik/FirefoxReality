@@ -143,6 +143,8 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
         }
     }
 
+    static final String LOGTAG = SystemUtils.createLogtag(VRBrowserActivity.class);
+
     // Used to load the 'native-lib' library on application startup.
     static {
         System.loadLibrary("native-lib");
@@ -154,7 +156,6 @@ public class VRBrowserActivity extends PlatformActivity implements WidgetManager
     static final int SwipeDelay = 1000; // milliseconds
     static final long RESET_CRASH_COUNT_DELAY = 5000;
 
-    static final String LOGTAG = SystemUtils.createLogtag(VRBrowserActivity.class);
     HashMap<Integer, Widget> mWidgets;
     private int mWidgetHandleIndex = 1;
     AudioEngine mAudioEngine;
