@@ -71,10 +71,16 @@ if(OPENXR)
     set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -DXR_USE_PLATFORM_ANDROID -DXR_USE_GRAPHICS_API_OPENGL_ES"
     )
-    include_directories(
-        ${CMAKE_SOURCE_DIR}/../third_party/OpenXR-SDK/include
-        ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Include
-        ${CMAKE_SOURCE_DIR}/../app/src/openxr/cpp)
+    if(OCULUSVR)
+        include_directories(
+            ${CMAKE_SOURCE_DIR}/../third_party/hvr/openxr
+            ${CMAKE_SOURCE_DIR}/../third_party/OpenXR-SDK/include
+            ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Include
+            ${CMAKE_SOURCE_DIR}/../app/src/openxr/cpp)
+    elseif(HVR)
+        include_directories(${CMAKE_SOURCE_DIR}/../third_party/hvr/
+                            ${CMAKE_SOURCE_DIR}/../app/src/openxr/cpp)
+    endif()
     target_sources(
         native-lib
         PUBLIC src/openxr/cpp/DeviceDelegateOpenXR.cpp
@@ -82,13 +88,23 @@ if(OPENXR)
                src/openxr/cpp/OpenXRLayers.cpp
                src/openxr/cpp/OpenXRInput.cpp
                src/openxr/cpp/OpenXRExtensions.cpp)
-    add_custom_command(
-        TARGET native-lib
-        POST_BUILD
-        COMMAND
-            ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Libs/Android/${ANDROID_ABI}/Release/libopenxr_oculus.so
-            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libopenxr_oculus.so)
+    if(OCULUSVR)
+        add_custom_command(
+            TARGET native-lib
+            POST_BUILD
+            COMMAND
+                ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Libs/Android/${ANDROID_ABI}/Release/libopenxr_oculus.so
+                ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libopenxr_oculus.so)
+    elseif(HVR)
+        add_custom_command(
+            TARGET native-lib
+            POST_BUILD
+            COMMAND
+                ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/../third_party/hvr/${ANDROID_ABI}/libxr_loader.so
+                ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libxr_loader.so)
+    endif()
 elseif(OCULUSVR)
     include_directories(
         ${CMAKE_SOURCE_DIR}/../third_party/ovr_mobile/VrApi/Include
@@ -162,6 +178,13 @@ set_target_properties(
         IMPORTED_LOCATION
         ${CMAKE_SOURCE_DIR}/../third_party/wavesdk/build/wvr_client/jni/${ANDROID_ABI}/libwvr_api.so
 )
+
+add_library(hvr-lib SHARED IMPORTED)
+set_target_properties(
+    hvr-lib
+    PROPERTIES
+        IMPORTED_LOCATION
+        ${CMAKE_SOURCE_DIR}/../third_party/hvr/${ANDROID_ABI}/libxr_loader.so)
 
 # Specifies libraries CMake should link to your target library. You
 # can link multiple libraries, such as libraries you define in this
