@@ -108,15 +108,30 @@ struct DeviceDelegateOpenXR::State {
     (*app->activity->vm).AttachCurrentThread(&jniEnv, NULL);
     CHECK(jniEnv != nullptr);
 
+    PFN_xrInitializeLoaderKHR xrInitializeLoaderKHR = nullptr;
+    xrGetInstanceProcAddr(instance, "xrInitializeLoaderKHR",
+                          reinterpret_cast<PFN_xrVoidFunction*>(&xrInitializeLoaderKHR));
+    if (xrInitializeLoaderKHR != nullptr) {
+      XrLoaderInitInfoAndroidKHR loaderData;
+      memset(&loaderData, 0, sizeof(loaderData));
+      loaderData.type = XR_TYPE_LOADER_INIT_INFO_ANDROID_KHR;
+      loaderData.next = nullptr;
+      loaderData.applicationVM = app->activity->vm;
+      loaderData.applicationContext = jniEnv->NewGlobalRef(app->activity->clazz);
+      xrInitializeLoaderKHR((const XrLoaderInitInfoBaseHeaderKHR *)&loaderData);
+    }
+
 #ifdef OCULUSVR
-    // Adhoc loader required for OpenXR on Oculus
-    XrLoaderInitializeInfoAndroidOCULUS loaderData;
-    memset(&loaderData, 0, sizeof(loaderData));
-    loaderData.type = XR_TYPE_LOADER_INITIALIZE_INFO_ANDROID_OCULUS;
-    loaderData.next = nullptr;
-    loaderData.applicationVM = app->activity->vm;
-    loaderData.applicationActivity = jniEnv->NewGlobalRef(app->activity->clazz);
-    xrInitializeLoaderOCULUS(&loaderData);
+    if (xrInitializeLoaderKHR == nullptr) {
+      // Adhoc loader required for OpenXR on Oculus
+      XrLoaderInitializeInfoAndroidOCULUS loaderData;
+      memset(&loaderData, 0, sizeof(loaderData));
+      loaderData.type = XR_TYPE_LOADER_INITIALIZE_INFO_ANDROID_OCULUS;
+      loaderData.next = nullptr;
+      loaderData.applicationVM = app->activity->vm;
+      loaderData.applicationActivity = jniEnv->NewGlobalRef(app->activity->clazz);
+      xrInitializeLoaderOCULUS(&loaderData);
+    }
 #endif
 
     // Initialize the XrInstance
