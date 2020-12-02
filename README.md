@@ -33,8 +33,17 @@ git clone git@github.com:MozillaReality/FirefoxReality-android-third-party.git t
 
 This repo is only available to Mozilla employees. If you have access to the relevant SDK but not this repo, you can manually place them here:
 
- - `third_party/ovr_mobile/` for Oculus (should contain a `VrApi` folder)
- - `third_party/wavesdk/` for Vive (should contain a `build` folder, among other things)
+- For Oculus:
+  - `third_party/ovr_mobile/` (should contain a `VrApi` folder) - [version 1.36.0 aka 19.0][ovr_mobile] is required.
+  - `third_party/OVRPlatformSDK/` (should contain an `Android` folder) - [version 19.0][ovr_platform] is required.
+  - `third_party/ovr_openxr_mobile_sdk/` to use (optional) OpenXR support (should contain an `OpenXR` folder) - [the most recent version is preferred][ovr_openxr_mobile_sdk].
+- For OpenXR: Note you need to add `openxr = 1` to a properties file named `user.properties`
+  - `third_party/OpenXR-SDK` should contain a clone or recent snapshot of https://github.com/KhronosGroup/OpenXR-SDK
+- `third_party/wavesdk/` for Vive (should contain a `build` folder, among other things)
+
+[ovr_mobile]: https://developer.oculus.com/downloads/package/oculus-mobile-sdk/1.36.0/
+[ovr_platform]: https://developer.oculus.com/downloads/package/oculus-platform-sdk/19.0.0/
+[ovr_openxr_mobile_sdk]: https://developer.oculus.com/downloads/package/oculus-openxr-mobile-sdk/
 
 The [repo in `third_party`](https://github.com/MozillaReality/FirefoxReality-android-third-party) can be updated like so:
 
