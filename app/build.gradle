@@ -146,6 +146,17 @@ android {
 
     productFlavors {
         // Supported platforms
+        openxr {
+            dimension "platform"
+            externalNativeBuild {
+                cmake {
+                    cppFlags "-DOPENXR" + getOpenXRFlags()
+                    arguments "-DOPENXR=ON", getOpenXRCMakeFlags()
+                }
+            }
+            manifestPlaceholders = [ headtrackingRequired:"false", permissionToRemove:"android.permission.RECEIVE_BOOT_COMPLETED" ]
+        }
+
         oculusvr {
             dimension "platform"
             externalNativeBuild {
@@ -255,6 +266,10 @@ android {
 
     variantFilter { variant ->
         def needed = variant.name in [
+                'openxrArm64Debug',
+                'openxrArm64Release',
+                'openxrX86_64Debug',
+                'openxrX86_64Release',
                 'oculusvrArm64Debug',
                 'oculusvrArm64Release',
                 'oculusvrStoreArm64Debug',
@@ -291,6 +306,15 @@ android {
             manifest.srcFile getUseDebugSigningOnRelease() ? "src/debug/AndroidManifest.xml"
                                                            : manifest.srcFile
 
+        }
+
+        openxr {
+            java.srcDirs = [
+                    'src/openxr/java'
+            ]
+            res.srcDirs = [
+                    'src/openxr/res'
+            ]
         }
 
         oculusvr {
