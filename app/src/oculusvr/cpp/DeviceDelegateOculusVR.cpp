@@ -165,21 +165,26 @@ struct DeviceDelegateOculusVR::State {
 
     reorientCount = vrapi_GetSystemStatusInt(&java, VRAPI_SYS_STATUS_RECENTER_COUNT);
 
-//    vrapi_SetPropertyInt(&java, VRAPI_BLOCK_REMOTE_BUTTONS_WHEN_NOT_EMULATING_HMT, 0);
+#ifdef OVR_USE_3DOF
+    vrapi_SetPropertyInt(&java, VRAPI_BLOCK_REMOTE_BUTTONS_WHEN_NOT_EMULATING_HMT, 0);
+    vrapi_SetPropertyInt(&java, VRAPI_REORIENT_HMD_ON_CONTROLLER_RECENTER, 1);
+#endif // OVR_USE_3DOF
     // This needs to be set to 0 so that the volume buttons work. I'm not sure why since the
     // docs in the header indicate that setting this to false (0) means you have to
     // handle the gamepad events yourself.
     vrapi_SetPropertyInt(&java, VRAPI_EAT_NATIVE_GAMEPAD_EVENTS, 0);
-    // Reorient the headset after controller recenter.
-//    vrapi_SetPropertyInt(&java, VRAPI_REORIENT_HMD_ON_CONTROLLER_RECENTER, 1);
 
     const char * appId = OCULUS_6DOF_APP_ID;
 
     const int type = vrapi_GetSystemPropertyInt(&java, VRAPI_SYS_PROP_DEVICE_TYPE);
-//    if ((type >= VRAPI_DEVICE_TYPE_OCULUSGO_START ) && (type <= VRAPI_DEVICE_TYPE_OCULUSGO_END)) {
-//      VRB_DEBUG("Detected Oculus Go");
-//      deviceType = device::OculusGo;
-//      appId = OCULUS_3DOF_APP_ID;
+
+#ifdef OVR_USE_3DOF
+    if ((type >= VRAPI_DEVICE_TYPE_OCULUSGO_START ) && (type <= VRAPI_DEVICE_TYPE_OCULUSGO_END)) {
+      VRB_DEBUG("Detected Oculus Go");
+      deviceType = device::OculusGo;
+      appId = OCULUS_3DOF_APP_ID;
+    } else
+#endif // OVR_USE_3DOF
     if ((type >= VRAPI_DEVICE_TYPE_OCULUSQUEST_START) && (type <= VRAPI_DEVICE_TYPE_OCULUSQUEST_END)) {
       VRB_DEBUG("Detected Oculus Quest");
       deviceType = device::OculusQuest;
@@ -1388,7 +1393,9 @@ DeviceDelegateOculusVR::EnterVR(const crow::BrowserEGLContext& aEGLContext) {
 
   // Reset reorientation after Enter VR
   m.reorientMatrix = vrb::Matrix::Identity();
-//  vrapi_SetRemoteEmulation(m.ovr, true);
+#ifdef OVR_USE_3DOF
+  vrapi_SetRemoteEmulation(m.ovr, true);
+#endif // OVR_USE_3DOF
 }
 
 void
