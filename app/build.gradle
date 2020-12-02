@@ -136,6 +136,7 @@ android {
 
     buildFeatures {
         dataBinding true
+        prefab true
     }
 
     lintOptions {
@@ -147,11 +148,12 @@ android {
     productFlavors {
         // Supported platforms
         openxr {
+            minSdkVersion build_versions.min_sdk_openxr
             dimension "platform"
             externalNativeBuild {
                 cmake {
                     cppFlags "-DOPENXR" + getOpenXRFlags()
-                    arguments "-DOPENXR=ON", getOpenXRCMakeFlags()
+                    arguments "-DOPENXR=ON", "-DVR_SDK_LIB=OpenXR::openxr_loader", getOpenXRCMakeFlags()
                 }
             }
             manifestPlaceholders = [ headtrackingRequired:"false", permissionToRemove:"android.permission.RECEIVE_BOOT_COMPLETED" ]
@@ -520,6 +522,12 @@ dependencies {
 if (findProject(':servo')) {
     dependencies {
       oculusvrImplementation project(':servo')
+    }
+}
+
+if (findProject(':openxr')) {
+    dependencies {
+        openxrImplementation project(':openxr')
     }
 }
 

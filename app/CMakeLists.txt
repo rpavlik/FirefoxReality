@@ -67,6 +67,8 @@ else()
         "${CMAKE_SHARED_LINKER_FLAGS} -u ANativeActivity_onCreate")
 endif()
 
+find_package(OpenXR QUIET)
+
 if(OPENXR)
     set(CMAKE_CXX_FLAGS
         "${CMAKE_CXX_FLAGS} -DXR_USE_PLATFORM_ANDROID -DXR_USE_GRAPHICS_API_OPENGL_ES"
@@ -82,13 +84,15 @@ if(OPENXR)
                src/openxr/cpp/OpenXRLayers.cpp
                src/openxr/cpp/OpenXRInput.cpp
                src/openxr/cpp/OpenXRExtensions.cpp)
-    add_custom_command(
-        TARGET native-lib
-        POST_BUILD
-        COMMAND
-            ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Libs/Android/${ANDROID_ABI}/Release/libopenxr_oculus.so
-            ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libopenxr_oculus.so)
+    if(NOT OpenXR_FOUND)
+        add_custom_command(
+            TARGET native-lib
+            POST_BUILD
+            COMMAND
+                ${CMAKE_COMMAND} -E copy
+                ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Libs/Android/${ANDROID_ABI}/Release/libopenxr_oculus.so
+                ${CMAKE_LIBRARY_OUTPUT_DIRECTORY}/libopenxr_oculus.so)
+    endif()
 elseif(OCULUSVR)
     include_directories(
         ${CMAKE_SOURCE_DIR}/../third_party/ovr_mobile/VrApi/Include
@@ -144,6 +148,21 @@ else()
         PROPERTIES
             IMPORTED_LOCATION
             ${CMAKE_SOURCE_DIR}/../third_party/ovr_mobile/VrApi/Libs/Android/${ANDROID_ABI}/Release/libvrapi.so
+    )
+endif()
+
+if(OpenXR_FOUND)
+    message(STATUS "got openxr")
+    add_library(openxr-lib INTERFACE)
+    target_link_libraries(openxr-lib INTERFACE OpenXR::openxr_loader)
+else()
+message(STATUS "got oculus")
+    add_library(openxr-lib SHARED IMPORTED)
+    set_target_properties(
+        oculusvr-lib
+        PROPERTIES
+            IMPORTED_LOCATION
+            ${CMAKE_SOURCE_DIR}/../third_party/ovr_openxr_mobile_sdk/OpenXR/Libs/Android/${ANDROID_ABI}/Release/libopenxr_oculus.so
     )
 endif()
 
