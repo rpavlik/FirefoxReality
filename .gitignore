@@ -78,3 +78,9 @@ app/schemas/
 
 # Token files
 .mls_token
+
+# vscode/eclipse files
+.vscode/
+.project
+.classpath
+.settings/
