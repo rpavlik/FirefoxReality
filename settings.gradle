@@ -7,12 +7,12 @@ if (wavebuild.exists()) {
     project(':wavesdk').projectDir = new File('third_party/wavesdk/')
 }
 
-def openxrbuild = new File('third_party/openxr/build.gradle')
+// def openxrbuild = new File('third_party/openxr/build.gradle')
 
-if (openxrbuild.exists()) {
-    include ':openxr'
-    project(':openxr').projectDir = new File('third_party/openxr/')
-}
+// if (openxrbuild.exists()) {
+//     include ':openxr'
+//     project(':openxr').projectDir = new File('third_party/openxr/')
+// }
 
 Properties userProperties = null;
 if (file('user.properties').canRead()) {

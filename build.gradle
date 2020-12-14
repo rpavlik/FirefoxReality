@@ -18,6 +18,11 @@ buildscript {
 
 allprojects {
     addRepos(repositories)
+    repositories {
+        maven {
+            url 'https://dl.bintray.com/rpavlik/maven'
+        }
+    }
 }
 
 task clean(type: Delete) {
