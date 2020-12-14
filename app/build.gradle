@@ -518,7 +518,7 @@ dependencies {
     picovrImplementation fileTree(dir: "${project.rootDir}/third_party/picovr/", include: ['*.aar'])
     picovrStoreImplementation fileTree(dir: "${project.rootDir}/third_party/picovr/", include: ['*.aar'])
 
-    openxrImplementation 'org.khronos.openxr:loader_for_android:1.0.13-beta-1'
+    openxrImplementation 'org.khronos.openxr:openxr_loader_for_android:1.0.13-beta-1'
 }
 
 if (findProject(':servo')) {
